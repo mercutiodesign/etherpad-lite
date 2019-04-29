@@ -6,7 +6,7 @@
 #
 # Version 0.1
 
-FROM node:latest
+FROM node:alpine
 LABEL maintainer="Etherpad team, https://github.com/ether/etherpad-lite"
 
 # git hash of the version to be built.
@@ -16,6 +16,9 @@ ARG ETHERPAD_VERSION=develop
 # Set the following to production to avoid installing devDeps
 # this can be done with build args (and is mandatory to build ARM version)
 ARG NODE_ENV=development
+
+RUN set -ex && \
+	apk add --no-cache curl
 
 # grab the ETHERPAD_VERSION tarball from github (no need to clone the whole
 # repository)
@@ -35,6 +38,8 @@ RUN echo "Getting version: ${ETHERPAD_VERSION}" && \
 
 # install node dependencies for Etherpad
 RUN /opt/etherpad-lite/bin/installDeps.sh
+
+RUN npm install sqlite3
 
 # Copy the custom configuration file, if present. The configuration file has to
 # be manually put inside the same directory containing the Dockerfile (we cannot

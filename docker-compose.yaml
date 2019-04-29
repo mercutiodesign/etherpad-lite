@@ -1,0 +1,21 @@
+version: "3.1"
+
+# based on https://docs.docker.com/compose/django/
+services:
+  etherpad:
+    build:
+      context: ./docker
+      args:
+        - ETHERPAD_VERSION=master
+        - NODE_ENV=production
+    ports:
+      - "0.0.0.0:9001:9001"
+    environment:
+      - NODE_ENV=production
+    volumes:
+      - etherdb:/opt/etherpad-lite/var/sqlite/
+    command: ["node", "node_modules/ep_etherpad-lite/node/server.js", "--apikey", "var/sqlite/APIKEY.txt", "--sessionkey","var/sqlite/SESSIONKEY.txt"]
+    restart: unless-stopped
+
+volumes:
+  etherdb: # this named volume holds on to the database between rebuilds
